@@ -1,5 +1,4 @@
 **/datasets/*
-**/models/*
 **/data/*.zip
 *.pyc
 build
