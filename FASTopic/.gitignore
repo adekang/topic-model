@@ -1,0 +1,10 @@
+*.pyc
+build
+dist
+*.egg-info
+.vscode
+.pytest_cache
+.python-version
+
+# Sphinx documentation
+docs/build/
