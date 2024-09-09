@@ -1,6 +1,6 @@
 **/datasets/*
 **/models/*
-**/data/*
+**/data/*.zip
 *.pyc
 build
 dist
