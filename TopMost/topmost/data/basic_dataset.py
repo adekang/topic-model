@@ -4,7 +4,7 @@ import numpy as np
 import scipy.sparse
 import scipy.io
 from sentence_transformers import SentenceTransformer
-from topmost.preprocessing import Preprocessing
+from ..preprocessing import Preprocessing
 from . import file_utils
 from typing import List, Tuple, Union, Mapping, Any, Callable, Iterable
 
@@ -50,12 +50,14 @@ class RawDataset:
                  verbose=False
                 ):
 
+        # 对于给定的文档集合，使用预处理器进行预处理 去除停用词，词干提取，词频统计等
         if preprocessing is None:
             preprocessing = Preprocessing(verbose=verbose)
 
         rst = preprocessing.preprocess(docs, pretrained_WE=pretrained_WE)
         self.train_data = rst['train_bow']
         self.train_texts = rst['train_texts']
+        # 词汇表 是一个列表，包含文档集合中所有处理后的单词
         self.vocab = rst['vocab']
 
         self.vocab_size = len(self.vocab)
@@ -74,6 +76,7 @@ class RawDataset:
 
         if as_tensor:
             if contextual_embed:
+                # 将词袋表示和上下文嵌入合并
                 self.train_data = np.concatenate((self.train_data, self.train_contextual_embed), axis=1)
 
             self.train_data = torch.from_numpy(self.train_data).float().to(device)

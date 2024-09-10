@@ -12,9 +12,9 @@ import scipy.sparse
 from tqdm import tqdm
 from sklearn.feature_extraction.text import CountVectorizer
 
-from topmost.data import file_utils
-from topmost.utils._utils import get_stopwords_set
-from topmost.utils.logger import Logger
+from ..data import file_utils
+from ..utils._utils import get_stopwords_set
+from ..utils.logger import Logger
 
 
 logger = Logger("WARNING")
@@ -147,32 +147,19 @@ class Preprocessing:
                 ):
         """
         Args:
-            test_sample_size:
-                Size of the test set.
-            test_p:
-                Proportion of the test set. This helps sample the train set based on the size of the test set.
-            stopwords:
-                List of stopwords to exclude.
-            min-doc-count:
-                Exclude words that occur in less than this number of documents.
-            max_doc_freq:
-                Exclude words that occur in more than this proportion of documents.
-            keep-num:
-                Keep tokens made of only numbers.
-            keep-alphanum:
-                Keep tokens made of a mixture of letters and numbers.
-            strip_html:
-                Strip HTML tags.
-            no-lower:
-                Do not lowercase text
-            min_length:
-                Minimum token length.
-            min_term:
-                Minimum term number
-            vocab-size:
-                Size of the vocabulary (by most common in the union of train and test sets, following above exclusions)
-            seed:
-                Random integer seed (only relevant for choosing test set)
+            test_sample_size: 测试集的大小。
+            test_p: 测试集的比例。这个参数帮助根据测试集的大小来采样训练集。
+            stopwords: 要排除的停用词列表。
+            min-doc-count: 排除在少于这个数量的文档中出现的词。
+            max_doc_freq: 排除在超过这个比例的文档中出现的词。
+            keep-num: 保留只包含数字的标记（tokens）。
+            keep-alphanum: 保留包含字母和数字混合的标记。
+            strip_html: 去除HTML标签。
+            no-lower: 不将文本转换为小写。
+            min_length: 标记的最小长度。
+            min_term: 最小词数。
+            vocab-size: 词汇表的大小（根据训练集和测试集中最常见的词，遵循上述排除规则）。
+            seed: 随机整数种子（仅在选择测试集时相关）。
         """
 
         self.test_sample_size = test_sample_size
@@ -257,7 +244,10 @@ class Preprocessing:
 
         train_texts = list()
         test_texts = list()
+
+        # 用于统计所有文本中每个单词或标记出现的次数。（例如 car 在一个文档中出现5次  就标记5）
         word_counts = Counter()
+        # 用于统计每个单词或标记出现在多少不同的文档中。（例如 car 在一个文档中出现5次 但是只标记1）
         doc_counts_counter = Counter()
 
         train_labels, test_labels = self.convert_labels(train_labels, test_labels)
@@ -289,6 +279,7 @@ class Preprocessing:
         vocab.sort()
 
         train_idx = [i for i, text in enumerate(train_texts) if len(text.split()) >= self.min_term]
+        # 训练的doc的索引
         train_idx = np.asarray(train_idx)
 
         if raw_test_texts is not None:

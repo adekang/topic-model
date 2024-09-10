@@ -34,9 +34,9 @@ def test_models(cache_path, num_topics):
     # download_dataset("20NG", cache_path=f"{cache_path}/datasets")
     dataset = BasicDataset(f"{cache_path}/datasets/20NG", as_tensor=False, read_labels=True)
 
-    model = FASTopics(num_topics=num_topics, epochs=100, verbose=True)
+    model = FASTopics(num_topics=num_topics, epochs=3, verbose=True)
     model_test(model, dataset, num_topics)
 
 
 if __name__ == '__main__':
-    test_models(cache_path='.', num_topics=100)
+    test_models(cache_path='.', num_topics=10)

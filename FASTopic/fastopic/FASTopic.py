@@ -4,9 +4,9 @@ from collections import defaultdict
 from pathlib import Path
 
 import torch
-from topmost.utils._utils import get_top_words
-from topmost.data import RawDataset
-from topmost.preprocessing import Preprocessing
+from TopMost.topmost.utils._utils import get_top_words
+from TopMost.topmost.data import RawDataset
+from TopMost.topmost.preprocessing import Preprocessing
 
 from tqdm import tqdm
 
@@ -39,32 +39,29 @@ class FASTopic:
         log_interval: int=10,
         verbose: bool=False,
     ):
-        """FASTopic initialization.
+        """FASTopic初始化。
 
-        Args:
-            num_topics: The number of topics.
-            preprocessing: preprocessing class from topmost.preprocessing.Preprocessing
-            doc_embed_model: The used document embedding model.
-                             This can be your callable model that implements `.encode(docs)`.
-                             This can also be a model name in sentence-transformers.
-                             The default is "all-MiniLM-L6-v2".
-            num_top_words: The number of top words to be returned in topics.
-            DT_alpha: The sinkhorn alpha between document embeddings and topic embeddings.
-            TW_alpha: The sinkhorn alpha between topic embeddings and word embeddings.
-            theta_temp: The temperature parameter of the softmax used
-                        to compute doc topic distributions during testing.
-            epochs: The number of epochs.
-            learning_rate: The learning rate.
-            device: The device.
-            normalize_embeddings: Set this to True to normalize document embeddings.
-                                  This parameter may not be effective
-                                  when you use your own document embedding model.
-            save_memory: Set this to True to learn with a batch of documents at each time.
-                         This uses less memory.
-            batch_size: The batch size used when save_memory is True.
-            log_interval: The interval to print logs during training.
-            verbose: Changes the verbosity of the model, Set to True if you want
-                     to track the stages of the model.
+        参数：
+            num_topics: 主题数量。
+            preprocessing: 来自topmost.preprocessing.Preprocessing的预处理类。
+            doc_embed_model: 使用的文档嵌入模型。
+                             这可以是您实现`.encode(docs)`的可调用模型。
+                             这也可以是sentence-transformers中的模型名称。
+                             默认值为"all-MiniLM-L6-v2"。
+            num_top_words: 在主题中返回的顶级词汇数量。
+            DT_alpha: 文档嵌入和主题嵌入之间的Sinkhorn alpha值。
+            TW_alpha: 主题嵌入和单词嵌入之间的Sinkhorn alpha值。
+            theta_temp: 在测试期间用于计算文档主题分布的softmax的温度参数。
+            epochs: 训练的轮数。
+            learning_rate: 学习率。
+            device: 设备。
+            normalize_embeddings: 设置为True以标准化文档嵌入。
+                                  当您使用自己的文档嵌入模型时，此参数可能无效。
+            save_memory: 设置为True以在每次学习时使用一批文档。
+                         这会使用较少的内存。
+            batch_size: 当save_memory为True时使用的批处理大小。
+            log_interval: 在训练期间打印日志的间隔。
+            verbose: 更改模型的详细程度，如果您想跟踪模型的各个阶段，请设置为True。
         """
 
         if device is None:
@@ -122,7 +119,7 @@ class FASTopic:
             self.batch_size = data_size
 
         dataset_device = 'cpu' if self.save_memory else self.device
-
+        # 文档的嵌入
         self.doc_embedder = DocEmbedModel(self.doc_embed_model, self.normalize_embeddings, self.device)
 
         dataset = RawDataset(
@@ -137,6 +134,7 @@ class FASTopic:
             verbose=self.verbose,
         )
 
+        # 经过嵌入的文档
         self.train_doc_embeddings = torch.as_tensor(dataset.train_contextual_embed)
 
         if not self.save_memory:
@@ -149,6 +147,7 @@ class FASTopic:
         self.model.init(vocab_size, embed_size)
         self.model = self.model.to(self.device)
 
+        # 默认情况下，使用Adam优化器
         optimizer = self.make_optimizer(self.learning_rate)
 
         self.model.train()

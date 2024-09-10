@@ -1,5 +1,5 @@
 import numpy as np
-from topmost.data import file_utils
+from ..data import file_utils
 
 
 def get_top_words(beta, vocab, num_top_words, verbose=False):

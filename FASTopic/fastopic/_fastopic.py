@@ -23,20 +23,24 @@ class fastopic(nn.Module):
         self.epsilon = 1e-12
 
     def init(self,
-             vocab_size: int,
-             embed_size: int
+             vocab_size: int,# V 5000
+             embed_size: int # H 384
             ):
 
-        self.word_embeddings = nn.init.trunc_normal_(torch.empty(vocab_size, embed_size))
+        # 初始化词嵌入矩阵
+        self.word_embeddings = nn.init.trunc_normal_(torch.empty(vocab_size, embed_size)) # VxH
         self.word_embeddings = nn.Parameter(F.normalize(self.word_embeddings))
 
-        self.topic_embeddings = torch.empty((self.num_topics, embed_size))
+        # 初始化主题嵌入矩阵
+        self.topic_embeddings = torch.empty((self.num_topics, embed_size)) # KxH
         nn.init.trunc_normal_(self.topic_embeddings, std=0.1)
         self.topic_embeddings = nn.Parameter(F.normalize(self.topic_embeddings))
 
+        # 初始化词权重和主题权重
         self.word_weights = nn.Parameter((torch.ones(vocab_size) / vocab_size).unsqueeze(1))
         self.topic_weights = nn.Parameter((torch.ones(self.num_topics) / self.num_topics).unsqueeze(1))
 
+        # 初始化ETP
         self.DT_ETP = ETP(self.DT_alpha, init_b_dist=self.topic_weights)
         self.TW_ETP = ETP(self.TW_alpha, init_b_dist=self.word_weights)
 
@@ -95,6 +99,5 @@ class fastopic(nn.Module):
         }
 
         return rst_dict
-
 
 
