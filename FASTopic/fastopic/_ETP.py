@@ -18,7 +18,7 @@ class ETP(nn.Module):
         self.sinkhorn_alpha = sinkhorn_alpha
         self.OT_max_iter = OT_max_iter
         self.stopThr = stopThr
-        self.epsilon = 1e-16
+        self.epsilon = 1e-16 # 正则化参数
         self.init_a_dist = init_a_dist
         self.init_b_dist = init_b_dist
 
