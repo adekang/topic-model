@@ -266,10 +266,10 @@ class Preprocessing:
                 doc_counts_counter.update(set(tokens))
                 parsed_text = ' '.join(tokens)
                 test_texts.append(parsed_text)
-
+        # 获取出现的词 和 词频
         words, doc_counts = zip(*doc_counts_counter.most_common())
         doc_freqs = np.array(doc_counts) / float(len(train_texts) + len(test_texts))
-
+        # 对词过滤形成词组
         vocab = [word for i, word in enumerate(words) if doc_counts[i] >= self.min_doc_count and doc_freqs[i] <= self.max_doc_freq]
 
         # filter vocabulary

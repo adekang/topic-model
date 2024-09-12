@@ -37,8 +37,8 @@ class fastopic(nn.Module):
         self.topic_embeddings = nn.Parameter(F.normalize(self.topic_embeddings))
 
         # 初始化词权重和主题权重
-        self.word_weights = nn.Parameter((torch.ones(vocab_size) / vocab_size).unsqueeze(1))
-        self.topic_weights = nn.Parameter((torch.ones(self.num_topics) / self.num_topics).unsqueeze(1))
+        self.word_weights = nn.Parameter((torch.ones(vocab_size) / vocab_size).unsqueeze(1)) # V*1
+        self.topic_weights = nn.Parameter((torch.ones(self.num_topics) / self.num_topics).unsqueeze(1)) # V*1 num_topics*1
 
         # 初始化ETP
         self.DT_ETP = ETP(self.DT_alpha, init_b_dist=self.topic_weights)
