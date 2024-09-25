@@ -134,7 +134,7 @@ class FASTopic:
             verbose=self.verbose,
         )
 
-        # 经过嵌入的文档
+        # 经过嵌入的文档  H 384 N 11384
         self.train_doc_embeddings = torch.as_tensor(dataset.train_contextual_embed)
 
         if not self.save_memory:

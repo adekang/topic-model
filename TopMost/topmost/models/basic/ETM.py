@@ -13,10 +13,21 @@ class ETM(nn.Module):
     '''
     def __init__(self, vocab_size, embed_size=200, num_topics=50, en_units=800, dropout=0., pretrained_WE=None, train_WE=False):
         super().__init__()
+        """
+            vocab_size: 词汇表的大小。
+            embed_size: 词嵌入的维度。
+            num_topics: 主题的数量。
+            en_units: 编码器层的单元数。
+            dropout: Dropout比率，用于防止过拟合。
+            pretrained_WE: 可选的预训练词嵌入。
+            train_WE: 是否训练词嵌入。
+        """
 
         if pretrained_WE is not None:
+            # 预训练好的
             self.word_embeddings = nn.Parameter(torch.from_numpy(pretrained_WE).float())
         else:
+            # 动态训练
             self.word_embeddings = nn.Parameter(torch.randn((vocab_size, embed_size)))
 
         self.word_embeddings.requires_grad = train_WE
@@ -35,6 +46,12 @@ class ETM(nn.Module):
         self.fc22 = nn.Linear(en_units, num_topics)
 
     def reparameterize(self, mu, logvar):
+        """
+        通过重新参数化从高斯分布返回样本。
+        :param mu:
+        :param logvar:
+        :return:
+        """
         if self.training:
             std = torch.exp(0.5 * logvar)
             eps = torch.randn_like(std)
@@ -43,13 +60,24 @@ class ETM(nn.Module):
             return mu
 
     def encode(self, x):
+        """
+        编码器。
+        :param x:
+        :return:
+        """
         e1 = self.encoder1(x)
         return self.fc21(e1), self.fc22(e1)
 
     def get_theta(self, x):
+        """
+        返回主题分布。
+        :param x:
+        :return:
+        """
         # Warn: normalize the input if use Relu.
         # https://github.com/adjidieng/ETM/issues/3
         norm_x = x / x.sum(1, keepdim=True)
+        # 均值 方差
         mu, logvar = self.encode(norm_x)
         z = self.reparameterize(mu, logvar)
         theta = F.softmax(z, dim=-1)
@@ -59,12 +87,18 @@ class ETM(nn.Module):
             return theta
 
     def get_beta(self):
+        """
+        返回主题-词分布。 是一个向量
+        主题的向量表示与各个词的词向量点乘后的softmax化的结果。
+        :return:
+        """
         beta = F.softmax(torch.matmul(self.topic_embeddings, self.word_embeddings.T), dim=1)
         return beta
 
     def forward(self, x, avg_loss=True):
         theta, mu, logvar = self.get_theta(x)
         beta = self.get_beta()
+        # 矩阵乘法
         recon_x = torch.matmul(theta, beta)
 
         loss = self.loss_function(x, recon_x, mu, logvar, avg_loss)

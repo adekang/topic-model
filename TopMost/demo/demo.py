@@ -2,11 +2,10 @@ from topmost.data import download_dataset
 import topmost
 
 device = "cuda" # or "cpu"
-dataset_dir = "./datasets/Wikitext-103"
+dataset_dir = "./datasets/20NG"
 
 dataset = topmost.data.BasicDataset(dataset_dir, read_labels=False, device=device)
-model = topmost.models.ECRTM(dataset.vocab_size, pretrained_WE=dataset.pretrained_WE)
-# model = topmost.models.ETM(dataset.vocab_size, pretrained_WE=dataset.pretrained_WE)
+model = topmost.models.ETM(dataset.vocab_size, pretrained_WE=dataset.pretrained_WE)
 model = model.to(device)
 # create a trainer
 trainer = topmost.trainers.BasicTrainer(model, dataset, verbose=True)
