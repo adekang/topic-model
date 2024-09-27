@@ -1,6 +1,7 @@
 **/datasets/*
 **/data/*.zip
 *.pyc
+**/.idea/*
 build
 dist
 *.egg-info
@@ -115,3 +116,4 @@ ENV/
 
 # IDE Pycharm
 .idea
+/GINopic/.idea/
